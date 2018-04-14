@@ -1,0 +1,181 @@
+---
+title: "Modelo.Regresión.Lineal"
+author: "Dayana Galárraga"
+date: "11 de abril de 2018"
+output: ioslides_presentation
+---
+
+##Modelo de Regresión Lineal Simple 
+
+**Regresión**
+
+Al trabajar con un conjunto de variables es común encontrar relaciones entre ellas, de manera que el valor de una de ellas (**variable dependiente**) pueden predecirse a patir de las cifras de otras variables (**independientes**).
+
+El objetivo pricipal de la *regresión* es encontrar la función que mejor capte la relación entre la variable dependiente y las independientes, por lo general se supone que la relación que guardan la variable dependiente y las independientes es lineal por lo que se utilizan los **modelos de regresión lineal**
+
+##**Correlación**
+
+La correlación se encuentra ligada con el concepto de regresión ya que mide el gardo de asociación que existe entre las variables, de manera que una variable independiente que presente un alto grado de correlación con la variable dependiente será "muy útil"para predecir los valores de ésta última.
+
+En este estudio se mostrará como ajustar un modelo de regresión, prestando especial atención a los modelos de regresión lineal. 
+
+##Regresión Lineal simple.
+
+El modelo de regresión lineal simple estudia la relación lineal entre la variable respuesta (**Y**) y la variable regresora (**X**), según el siguiente modelo:
+
+```{r, fig.align='center', out.width="150px", echo=FALSE}
+knitr::include_graphics("G:/CURSO R/Deberes_R/Modulo 3/formula.jpg",dpi = 0.1 )
+```
+
+Estudiaremos la regresión lineal simple mediante un ejemplo, para ello vamos a trabajar con la base de datos denominada empleados que contiene información de la edad, altura, peso y sexo de 100 empleados de una empresa.
+
+```{r, include=FALSE}
+getwd()
+setwd("G:/CURSO R/Deberes_R/Modulo 3")
+base_empleados <- read.csv("Empleados.csv", sep = ";", header = TRUE)
+str(base_empleados)
+attach(base_empleados)
+```
+
+##Diagrama de Dispersión
+El diagrama de dispersión nos permite visualizar como se comportan las variables entre sí, para nuentro ejemplo mostraremos la realción existente entre la variable "Peso" y "Altura" de los 100 empleados.
+
+##
+```{r, fig.align='center', fig.height=6, echo=FALSE}
+plot(Peso~Altura, col = "blue", pch=16, axes = TRUE)
+```
+
+##Función de regresión
+En el gráfico anterior se puede observar que existe una relación intensa entre las dos variables, tambien se puede asumir un cierto grado de relación lineal entre ambas variables, por lo que procedemos al ajuste del modelo lineal.
+
+El modelo de regresión lineal simple para predecir el **peso** en función de la **altura** es:
+
+```{r, fig.align='center', out.width="300px", echo=FALSE}
+knitr::include_graphics("G:/CURSO R/Deberes_R/Modulo 3/Formula2.png",dpi = 0.1 )
+```
+
+Para llevar a cabo esta regreseión creamos un ojbeto denominado Modelo1 al cual se le va asignar la función **lm(Peso~Altura, data = base_empleados)**, obteniendo los siguientes resultados:
+
+##
+```{r, include=FALSE}
+Modelo1 <- lm(Peso~Altura)
+summary(Modelo1)
+names(Modelo1)
+anova(Modelo1)
+Modelo1$coefficients
+library(knitr)
+```
+```{r, echo=FALSE}
+kable(summary(Modelo1)$coef, digits = 5)
+```
+
+<br>
+
+En la tabla anterior encontramos los valores de los parámetros junto a sus errores estándar, cada parámetro aparece acompañado del valor de un estadístico **t** de Student y un *p-valor* que se utiliza para contrastar la **significacia del parámetro** en cuestión, es decir para resolver los siguientes contrastes de hipótesis.
+
+```{r, fig.align='center', out.width="300px", echo=FALSE}
+knitr::include_graphics("G:/CURSO R/Deberes_R/Modulo 3/Formula3.png",dpi = 0.1 )
+```
+
+##
+#####En nuestro ejemplo, los *p-valores* que nos ayudan a resolver estos contrastes son 0.00153 y 5.29e-09, ambos menores que 0.05. Así, considerando un nivel del significación del 5%, rechazamos la hipótesis nula en ambos contrastes, de manera que podemos suponer que ambos parámetros son  significativamente distintos de 0.
+<br>
+Por tanto, el modelo lineal puede escribirse del siguiente modo:
+<br>                        
+$Peso = -78.0629 + 0.8637*Altura$
+
+Estos dos parametros pueden interpretarse de la siguiente menera: **-78.0629** es el valor del peso para una persona de altura **0**, lo cual no tiene sentido; por esta razón la interpretación del parámetro $\widehat{\beta_0}$ no es relevante y todo el interés recae sobre la interpretación del resto de parámetro.
+
+##
+######El $\widehat{\beta_1}$ que es igual a 0.8637 nos indica que, por termino medio, cada centímetro de incremento en la altura de una persona supone un incremento de **0.8637** kg. en su peso.
+Analizaremos, a continuación, la información sobre los residuos
+
+| RESIDUOS                              | 
+----------------------------------------|-------------------------------------
+| Residual standard error: 11.02 on 98 degrees of freedom |
+| Multiple R-squared:  0.2942 | Adjusted R-squared:  0.287 |
+| F-statistic: 40.84 on 1 and 98 DF| p-value: 5.594e-09 |
+<br>
+Los Residuos se definen como la diferencia entre el verdadero valor de la variable dependiente y el valor que pronostica el modelo de regresiónes. En general, cuanto mejor es el ajuste, más pequeño es este error típico, para nuestro caso el error estándar de los residuos tiene un valor de 11.02
+
+##
+En la tabla anterior, encontramos los indicadores de bondad de ajuste del modelo denotado por el valor de $R^2$ (Multiple R-squared) y de $R^2ajustado$ (Ajusted R-squared), en nuestro ejemplo el $R^2$ tiene un valor de 0.2942; indica que en el modelo la **altura **de los empleados explica un 29.42% de su **peso** 
+
+La última línea de la salida incluye un estadístico **F de Snedecor** y el **p-valor** que se utilizan para el contraste de hipótesis el cual comprueba si, de forma global, el modelo lineal es apropiado para modelizar los datos.
+
+En el ejemplo, se muestra un valor del estadístico de contraste *F* de 40.84  con un  p_valor = 5.594e-9. Deduciendo que a un nivel de significación del  5%, (p_valor < 0.05), rechazamos la hipótesis nula, y podemos concluir que el modelo lineal es adecuado para nuestro conjunto de datos.
+
+##
+**Diagrama de dispersión con recta ajustada**
+
+```{r, fig.height=5.5, echo=FALSE}
+plot(Peso~Altura, xlab="Altura", ylab="Peso",pch=16, main="Nube de puntos y ajuste")
+abline(Modelo1, col = "blue")
+lines(lowess(Altura, Peso), col="purple")
+```
+
+##
+Introduciendo el siguiente orden, podemos ver el ajuste por sexos
+```{r, echo=FALSE, warning=FALSE}
+library(ggplot2)
+ggplot(data = base_empleados, aes(x=Altura, y=Peso, shape=Sexo, color=Sexo)) + geom_point() +
+  geom_smooth(method = lm) + labs(title="Nube de puntos y ajuste por sexo\n") + theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r, include=FALSE}
+# Residuos y Estimación de la varianza del error
+Residuos1 <- Modelo1$residuals
+n <- length(Altura)
+sum(Modelo1$residuals^2)/(n-2)
+#test para los residuos 
+library(lmtest)
+Box.test(Modelo1$residuals, lag = 1, type = "Ljung-Box")
+#dwtest(Peso~Altura, alternative = "two.sided")#test de Durbin Whatson
+shapiro.test(Modelo1$residuals)
+#Para este caso se rechaza la hipotesis nula que establece una normalidad en los residuos 
+```
+
+## Intervalos de Confianza para los parámetros
+Resulta interesante calcular intervalos de confianza para dichos parámetros. En particular, para la pendiente de la recta, puesto que es el parámetro más decisivo para la interpretación del modelo.
+
+En este sentido, el intervalo de confianza  para la pendiente de la recta es:
+
+$\hat{b}\pm t_{\infty/2n-2}*\sqrt{\frac{S^2}{\sum(X_I-\bar{X})^2}}$
+
+donde S es el error típico y 1$-\infty$ %, el nivel de confianza.
+
+##
+¿Cómo interpretamos el intervalo?
+```{r, echo=FALSE}
+# IC para los parámetros al 95%
+kable(confint(Modelo1, level = 0.95), digits = 4)
+```
+
+<br>
+El cuadro anterior nos muestra una probabilidad prefijada del verdadero valor del parámetro que estimamos, es decir es la probabilidad de que el intervalo de confianza contenga el verdadero valor del parámetro poblacional.
+
+A través de los datos podemos decir que el hecho de aumentar un centimetro de altura para el caso de los empleados su peso podria aumentar entre 0.595 y 1.131 kilos 
+
+##
+```{r, fig.height=6, echo=FALSE}
+#Gráficos
+par(mfrow=c(2,2))
+plot(Modelo1)
+par(mfrow=c(1,1))
+```
+
+##
+######Una vez que tenemos ajustado el modelo podemos realizar predicciones, en este caso vamos a calcular una predicción para el caso de un individuo que mide 173cm.
+<br>
+Esto lo podemos hacer de 2 formas diferentes:
+
++ Directamente en la ventana de instrucciones de R introduciendo manualmente los valores de la ecuación; es decir, tecleando.
+```{r}
+Altura1 = 173
+Peso_nuevo = -78.0629+0.8637*Altura1
+Peso_nuevo 
+```
++ Usando el comando predict
+```{r, results=FALSE}
+predict(Modelo1, data.frame(Altura=173), interval = "confidence")
+```
